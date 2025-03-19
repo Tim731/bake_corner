@@ -1,5 +1,5 @@
 <footer class="bg-base-300 text-primary py-10 px-6">
-    <div class="container mx-auto flex flex-col md:flex-row justify-center items-center text-center md:text-left gap-25 md:py-10">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between text-center md:text-left gap-25 md:py-10">
 
         <!-- Logo Section -->
         <div class="flex flex-col items-center md:items-center">
