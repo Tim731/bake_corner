@@ -1,0 +1,73 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"); */
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* --font-serif: 'Inter', serif; */
+}
+
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+    name: "bake-corner";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-base-100: oklch(100% 0 0);
+    --color-base-200: oklch(97% 0 0);
+    --color-base-300: oklch(96% 0.03 90);
+    --color-base-content: oklch(40% 0.12 350);
+    --color-primary: #592147;
+    --color-primary-content: #f5f5f5;
+    --color-secondary: oklch(80% 0.24 85);
+    --color-secondary-content: #592147;
+    --color-accent: #000000;
+    --color-accent-content: #fff7df;
+    --color-neutral: oklch(96% 0.03 90);
+    --color-neutral-content: oklch(40% 0.12 350);
+    --color-info: oklch(70% 0.165 254.624);
+    --color-info-content: oklch(28% 0.091 267.935);
+    --color-success: #215933;
+    --color-success-content: oklch(97% 0 0);
+    --color-warning: oklch(85% 0.199 91.936);
+    --color-warning-content: oklch(98% 0 0);
+    --color-error: #FF002E;
+    --color-error-content: oklch(97% 0 0);
+    --radius-selector: 1rem;
+    --radius-field: 2rem;
+    --radius-box: 0rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 0px;
+    --depth: 1;
+    --noise: 0;
+}
+
+.btn-ghost:hover {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.navbar ul.menu li a {
+    font-weight: bolder;
+    font-size: 20px;
+    transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.navbar ul.menu li a:hover {
+    background-color: transparent !important;
+    color: var(--color-secondary);
+    transform: scale(1.2); /* Slight scale effect */
+}
+
+.navbar ul.menu li a.active {
+    color: var(--color-secondary);
+}
