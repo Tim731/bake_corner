@@ -2,10 +2,10 @@
 
 @section('content')
     <div class="hero bg-accent text-base-300">
-        <div class="hero-content flex flex-col justify-between lg:flex-row min-h-140 w-full max-w-7xl">
+        <div class="hero-content flex flex-col justify-between lg:flex-row min-h-140 container">
             <!-- Image on the left -->
             <img src="{{ asset('images/chocolate_cake.png') }}"
-                class="max-w-sm rounded-lg shadow-2xl mr-0 lg:mr-5 hidden lg:block" />
+                class="max-w-sm rounded-lg shadow-2xl mr-0 lg:mr-5" />
 
             <!-- Text on the right -->
             <div class="text-center lg:text-left">
@@ -20,7 +20,7 @@
 
     <div class="flex items-center w-full">
         <div
-            class="flex flex-col lg:flex-row justify-between my-5 lg:my-12 max-w-7xl mx-auto lg:gap-6 gap-y-4">
+            class="flex flex-col lg:flex-row justify-between my-5 lg:my-12 container mx-auto lg:gap-6 gap-y-4">
             <a class="card bg-base-300 w-70 shadow-sm cursor-pointer rounded-4xl" href="#">
                 <div class="card-body items-center text-center">
                     <h1 class="card-title text-2xl font-serif">Cakes</h1>
@@ -79,7 +79,7 @@
     </div>
 
     <section class="bg-base-300 border-t-2">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center py-12 px-6">
+        <div class="container mx-auto flex flex-col md:flex-row items-center py-12 px-6">
             <!-- Image Section -->
             <div class="md:w-1/2 flex justify-center">
                 <img src="{{ asset('images/logo.png') }}" alt="Meet the Artist" class="max-w-full rounded-lg shadow-lg">
@@ -103,7 +103,7 @@
     </section>
 
 
-    <div class="text-center py-20">
+    <div class="text-center py-20 container mx-auto">
         <h1 class="text-5xl font-bold">Welcome to bake corner!</h1>
         <p class="mt-4 text-lg">Enjoy our freshly baked goods made with love. 🍞🥐🎂</p>
         <a href="#menu" class="btn btn-primary mt-6">View Our Menu</a>

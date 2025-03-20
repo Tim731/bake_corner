@@ -1,5 +1,5 @@
 <footer class="bg-base-300 text-primary py-10 px-6">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between text-center md:text-left gap-25 md:py-10">
+    <div class="container mx-auto flex flex-col md:flex-row justify-between text-center md:text-left gap-25 md:py-10">
 
         <!-- Logo Section -->
         <div class="flex flex-col items-center md:items-center">
@@ -41,7 +41,7 @@
     </div>
 
     <!-- Bottom Section -->
-    <div class="border-t border-primary mt-6 pt-4 text-center text-sm font-bold">
+    <div class="border-t border-primary mt-6 pt-4 text-center text-sm font-bold ">
         <p>Copyright © 2025 Bake Corner | Powered by Jayson</p>
     </div>
 </footer>
