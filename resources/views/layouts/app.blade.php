@@ -44,7 +44,7 @@
                 <ul class="menu menu-horizontal px-1 hidden lg:flex space-x-4">
                     <li><a>Login</a></li>
                     <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
-                    <li><a>Order</a></li>
+                    <li><a href="{{ route('order') }}" class="{{ request()->routeIs('order') ? 'active' : '' }}">Order</a></li>
                 </ul>
                 <a class="btn btn-ghost relative">
                     <i data-lucide="shopping-cart" class="text-secondary"></i>
@@ -53,11 +53,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
 
     <main class="w-full flex-grow">
         @yield('content')
