@@ -95,7 +95,7 @@
                     In 2012, I founded Muniroh’s Bakery in Malaysia as a means to support my family as a student.
                     What began as a necessity soon transformed into a heartfelt hobby and passion...
                 </p>
-                <a href="#" class="btn btn-secondary">
+                <a href="{{ route('contact') }}" class="btn btn-secondary">
                     Read more
                 </a>
             </div>

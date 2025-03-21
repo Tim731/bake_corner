@@ -26,9 +26,9 @@
                 <ul class="menu menu-horizontal px-1 hidden lg:flex space-x-4">
                     <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
                     <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}">Blog</a></li>
-                    <li><a>About</a></li>
-                    <li><a>Menu</a></li>
-                    <li><a>FAQ</a></li>
+                    <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
+                    <li><a href="{{ route('menu') }}" class="{{ request()->routeIs('menu') ? 'active' : '' }}">Menu</a></li>
+                    <li><a href="{{ route('faq') }}" class="{{ request()->routeIs('faq') ? 'active' : '' }}">FAQ</a></li>
                 </ul>
             </div>
 
@@ -43,7 +43,7 @@
             <div class="navbar-end">
                 <ul class="menu menu-horizontal px-1 hidden lg:flex space-x-4">
                     <li><a>Login</a></li>
-                    <li><a>Contact</a></li>
+                    <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
                     <li><a>Order</a></li>
                 </ul>
                 <a class="btn btn-ghost relative">
