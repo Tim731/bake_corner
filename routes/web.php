@@ -7,6 +7,8 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return view('home.index');
@@ -24,3 +26,9 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 
 Route::get('/order', [OrderController::class, 'index'])->name('order');
+
+Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
+
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
+Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');

@@ -14,6 +14,12 @@ class OrderDetail extends Model
         'product_id',
         'quantity',
         'subtotal',
+        'size',
+        'extras',
+    ];
+
+    protected $casts = [
+        'extras' => 'array', // Cast the 'extras' column to an array
     ];
 
     public function order()

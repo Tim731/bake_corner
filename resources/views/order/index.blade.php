@@ -49,29 +49,33 @@
                     </div>
                 @endif
                 @foreach ($products as $product)
-                    <div class="bg-base-100 rounded-2xl shadow-md p-6">
-                        @if ($product->images->count() > 0)
-                            <div class="w-full h-55 overflow-hidden rounded-2xl">
-                                <img src="{{ asset($product->images->first()->path) }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover rounded-2xl mb-4 transition-transform duration-300 hover:scale-110">
-                            </div>
-                        @else
-                            <div class="w-full h-55 overflow-hidden rounded-2xl">
-                                <img src="{{ asset('images/product_placeholder.png') }}" alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover rounded-2xl mb-4 transition-transform duration-300 hover:scale-110">
-                            </div>
-                        @endif
-                        <div class="p-3">
-                            <h3 class="text-lg font-bold text-primary">{{ $product->name }}</h3>
-                            <p class="text-gray-700 mb-2">{{ $product->description }}</p>
-                            <p class="text-gray-700 font-bold mb-4">${{ $product->price }}</p>
-                            <div class="flex items-center">
-                                <input type="number" value="1" min="1"
-                                    class="input input-bordered w-24 mr-4" />
-                                <button class="btn btn-primary">Add to Cart</button>
+                    <a href="{{ route('product.show', $product->product_id) }}" class="bg-base-100 rounded-2xl shadow-md p-6 flex flex-col justify-between product-card" data-product-id="{{ $product->product_id }}" style="cursor: pointer;">
+                        <div>
+                            @if ($product->images->count() > 0)
+                                <div class="w-full h-55 overflow-hidden rounded-2xl">
+                                    <img src="{{ asset($product->images->first()->path) }}" alt="{{ $product->name }}"
+                                        class="w-full h-full object-cover rounded-2xl mb-4 transition-transform duration-300 hover:scale-110">
+                                </div>
+                            @else
+                                <div class="w-full h-55 overflow-hidden rounded-2xl">
+                                    <img src="{{ asset('images/product_placeholder.png') }}" alt="{{ $product->name }}"
+                                        class="w-full h-full object-cover rounded-2xl mb-4 transition-transform duration-300 hover:scale-110">
+                                </div>
+                            @endif
+                            <div class="p-3">
+                                <h3 class="text-lg font-bold text-primary">{{ $product->name }}</h3>
+                                <p class="text-gray-700 mb-2">{{ $product->description }}</p>
+                                <p class="text-gray-700 font-bold mb-4">${{ $product->price }}</p>
                             </div>
                         </div>
-                    </div>
+                        {{-- <div class="flex items-center justify-between mt-auto">
+                            <input type="number" value="1" min="1"
+                                class="input input-bordered w-24 mr-4 quantity-input"
+                                data-product-id="{{ $product->product_id }}" />
+                            <button class="btn btn-primary add-to-cart-btn" data-product-id="{{ $product->product_id }}">Add to
+                                Cart</button>
+                        </div> --}}
+                    </a>
                 @endforeach
             </div>
             <div class="mt-8 w-full ">
@@ -79,4 +83,51 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            // Use event delegation for dynamically added elements
+            $(document).on('click', '.add-to-cart-btn', function() {
+                const productId = $(this).data('product-id');
+                const quantityInput = $(`.quantity-input[data-product-id="${productId}"]`);
+                const quantity = parseInt(quantityInput.val());
+
+                if (isNaN(quantity) || quantity < 1) {
+                    alert('Please enter a valid quantity.');
+                    return;
+                }
+
+                addToCart(productId, quantity);
+            });
+
+            function addToCart(productId, quantity) {
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: JSON.stringify({
+                        product_id: productId,
+                        quantity: quantity
+                    }),
+                    contentType: 'application/json',
+                    success: function(data) {
+                        if (data.success) {
+                            showToast("Added to cart successfully!", "success");
+                            window.updateCartCount(); // Call the global function
+                        } else {
+                            showToast("An error occurred while adding to cart.", "error");
+                        }
+                    },
+                    error: function(error) {
+                        console.error('There has been a problem with your AJAX operation:', error);
+                        showToast("An error occurred while adding to cart.", "error");
+                    }
+                });
+            }
+        });
+    </script>
 @endsection
