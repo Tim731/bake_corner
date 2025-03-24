@@ -23,7 +23,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cakes',
         ]);
         ProductImage::create([
-            'product_id' => $ubeCake->id, // Access the ID after creation
+            'product_id' => $ubeCake->product_id, // Access the ID after creation
             'path' => 'images/ube_cake.jpg',
         ]);
 
@@ -36,7 +36,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cakes',
         ]);
         ProductImage::create([
-            'product_id' => $chocolateCake->id, // Access the ID after creation
+            'product_id' => $chocolateCake->product_id, // Access the ID after creation
             'path' => 'images/chocolate_cake.png',
         ]);
 
@@ -49,7 +49,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cookies',
         ]);
         ProductImage::create([
-            'product_id' => $chocolateChipCookies->id, // Access the ID after creation
+            'product_id' => $chocolateChipCookies->product_id, // Access the ID after creation
             'path' => 'images/cookies.jpg',
         ]);
 
@@ -62,7 +62,7 @@ class ProductSeeder extends Seeder
             'category' => 'Brownies',
         ]);
         ProductImage::create([
-            'product_id' => $fudgeBrownies->id, // Access the ID after creation
+            'product_id' => $fudgeBrownies->product_id, // Access the ID after creation
             'path' => 'images/brownies.jpg',
         ]);
 
@@ -75,7 +75,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cupcakes',
         ]);
         ProductImage::create([
-            'product_id' => $vanillaCupcakes->id, // Access the ID after creation
+            'product_id' => $vanillaCupcakes->product_id, // Access the ID after creation
             'path' => 'images/cupcake.jpg',
         ]);
 
@@ -88,7 +88,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cupcakes',
         ]);
         ProductImage::create([
-            'product_id' => $redVelvetCupcakes->id,
+            'product_id' => $redVelvetCupcakes->product_id,
             'path' => 'images/cupcake.jpg',
         ]);
 
@@ -101,7 +101,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cookies',
         ]);
         ProductImage::create([
-            'product_id' => $oatmealRaisinCookies->id,
+            'product_id' => $oatmealRaisinCookies->product_id,
             'path' => 'images/cookies.jpg',
         ]);
 
@@ -114,7 +114,7 @@ class ProductSeeder extends Seeder
             'category' => 'Cakes',
         ]);
         ProductImage::create([
-            'product_id' => $carrotCake->id,
+            'product_id' => $carrotCake->product_id,
             'path' => 'images/ube_cake.jpg',
         ]);
 
@@ -127,7 +127,7 @@ class ProductSeeder extends Seeder
             'category' => 'Bars',
         ]);
         ProductImage::create([
-            'product_id' => $lemonBars->id,
+            'product_id' => $lemonBars->product_id,
             'path' => 'images/brownies.jpg',
         ]);
 
@@ -140,7 +140,7 @@ class ProductSeeder extends Seeder
             'category' => 'Brownies',
         ]);
         ProductImage::create([
-            'product_id' => $peanutButterBrownies->id,
+            'product_id' => $peanutButterBrownies->product_id,
             'path' => 'images/brownies.jpg',
         ]);
     }
