@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductImage; // Import the ProductImage model
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -16,22 +18,27 @@ class CartController extends Controller
         $size = $request->input('size');
         $extras = $request->input('extras', []);
 
-        // Validate the request data (optional but recommended)
+        // Validate the request data
         $request->validate([
-            'product_id' => 'required|exists:products,product_id',
+            'product_id' => 'required|exists:products,product_id', // Correct validation rule
             'quantity' => 'required|integer|min:1',
             'size' => 'nullable|string',
             'extras' => 'nullable|array',
         ]);
 
-        $product = Product::find($productId);
+        $product = Product::with('images')->find($productId);
 
         if (!$product) {
             return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
         }
 
-        // Add the product to the cart (you'll need to implement your cart logic here)
-        // Example using session:
+        // Get the first image URL (or null if no images)
+        $firstImageUrl = null;
+        if ($product->images->isNotEmpty()) {
+            $firstImageUrl = asset($product->images->first()->path); // Assuming 'path' is the column name
+        }
+
+        // Add the product to the cart
         $cart = session()->get('cart', []);
 
         $cartItemKey = $productId;
@@ -47,11 +54,13 @@ class CartController extends Controller
             $cart[$cartItemKey]['quantity'] += $quantity;
         } else {
             $cart[$cartItemKey] = [
+                'product_id' => $productId,
                 'name' => $product->name,
                 'price' => $product->price,
                 'quantity' => $quantity,
                 'size' => $size,
                 'extras' => $extras,
+                'image' => $firstImageUrl, // Store only the first image URL
             ];
         }
 
@@ -60,12 +69,60 @@ class CartController extends Controller
         return response()->json(['success' => true, 'message' => 'Product added to cart!']);
     }
 
+    public function get()
+    {
+        // session()->forget('cart');
+        $cart = Session::get('cart', []);
+        $cartItems = [];
+
+        foreach ($cart as $key => $item) {
+            $cartItems[] = [
+                'id' => $key,
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+                'image' => $item['image'], // Now this is a single URL
+            ];
+
+        }
+
+        return response()->json([
+            'cartItems' => $cartItems,
+            'cartCount' => count($cartItems),
+        ]);
+    }
+
+    public function remove($itemId)
+    {
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$itemId])) {
+            unset($cart[$itemId]);
+            Session::put('cart', $cart);
+            return response()->json(['message' => 'Item removed from cart'], 200);
+        } else {
+            return response()->json(['message' => 'Item not found in cart'], 404);
+        }
+    }
+
     public function count()
     {
         $cart = session()->get('cart', []);
-        // $count = array_sum(array_column($cart, 'quantity'));
         $count = count($cart);
         return response()->json(['count' => $count]);
+    }
+
+    public function update(Request $request, $itemId)
+    {
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$itemId])) {
+            $cart[$itemId]['quantity'] = $request->quantity;
+            Session::put('cart', $cart);
+            return response()->json(['message' => 'Item quantity updated'], 200);
+        } else {
+            return response()->json(['message' => 'Item not found in cart'], 404);
+        }
     }
 
     public function checkout(Request $request)
@@ -84,10 +141,10 @@ class CartController extends Controller
 
         // Create order details for each item in the cart
         foreach ($cart as $cartItemKey => $cartItem) {
-            $product = Product::find(explode('-', $cartItemKey)[0]);
+            $product = Product::find($cartItem['product_id']);
             $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->order_id;
-            $orderDetail->product_id = $product->product_id;
+            $orderDetail->order_id = $order->id; // Changed to 'id'
+            $orderDetail->product_id = $cartItem['product_id'];
             $orderDetail->quantity = $cartItem['quantity'];
             $orderDetail->subtotal = $cartItem['quantity'] * $cartItem['price'];
             $orderDetail->size = $cartItem['size'];

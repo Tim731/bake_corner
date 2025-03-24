@@ -29,6 +29,10 @@ Route::get('/order', [OrderController::class, 'index'])->name('order');
 
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('product.show');
 
+// Cart routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart/get', [CartController::class, 'get'])->name('cart.get'); // New route
+Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name('cart.remove'); // New route
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::put('/cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
