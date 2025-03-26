@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 
+
 Route::get('/', function () {
     return view('home.index');
 })->name('home');
@@ -36,3 +37,6 @@ Route::delete('/cart/remove/{itemId}', [CartController::class, 'remove'])->name(
 Route::get('/cart/count', [CartController::class, 'count'])->name('cart.count');
 Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::put('/cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
+
+Route::get('/checkout', [OrderController::class, 'checkout_form'])->name('checkout');
+Route::post('/checkout/process', [OrderController::class, 'processCheckout'])->name('cart.processCheckout');

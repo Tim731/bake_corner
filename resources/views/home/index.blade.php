@@ -21,7 +21,7 @@
     <div class="flex items-center w-full">
         <div
             class="flex flex-col lg:flex-row justify-between my-5 lg:my-12 container mx-auto lg:gap-6 gap-y-4">
-            <a class="card bg-base-300 w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cakes']) }}">
+            <a class="card bg-base-300 w-full md:w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cakes']) }}">
                 <div class="card-body items-center text-center">
                     <h1 class="card-title text-2xl font-serif">Cakes</h1>
                 </div>
@@ -33,7 +33,7 @@
                     <h5 class="card-title">Custom cakes</h5>
                 </div>
             </a>
-            <a class="card bg-base-300 w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cookies']) }}">
+            <a class="card bg-base-300 w-full md:w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cookies']) }}">
                 <div class="card-body items-center text-center">
                     <h1 class="card-title text-2xl font-serif">Cookies</h1>
                 </div>
@@ -45,7 +45,7 @@
                     <h5 class="card-title">Delicious cookies</h5>
                 </div>
             </a>
-            <a class="card bg-base-300 w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Brownies']) }}">
+            <a class="card bg-base-300 w-full md:w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Brownies']) }}">
                 <div class="card-body items-center text-center">
                     <h1 class="card-title text-2xl font-serif">Brownies</h1>
                 </div>
@@ -57,7 +57,7 @@
                     <h5 class="card-title">Tasty brownies</h5>
                 </div>
             </a>
-            <a class="card bg-base-300 w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cupcakes']) }}">
+            <a class="card bg-base-300 w-full md:w-70 shadow-sm cursor-pointer rounded-4xl" href="{{ route('order', ['category' => 'Cupcakes']) }}">
                 <div class="card-body items-center text-center">
                     <h1 class="card-title text-2xl font-serif">Cupcakes</h1>
                 </div>

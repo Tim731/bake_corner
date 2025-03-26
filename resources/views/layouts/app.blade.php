@@ -84,7 +84,7 @@
         </div>
         <div class="drawer-side">
             <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-            <ul class="bg-base-200 text-base-content min-h-full w-100 p-4" id="cart-sidebar">
+            <ul class="bg-base-200 text-base-content min-h-full w-100 p-6 pr-8" id="cart-sidebar">
                 <li class="font-bold text-lg mb-10"><a>Your Cart</a></li>
                 <div id="cart-items-container" class="mt-4 space-y-4 ">
                     <!-- Empty Cart Message -->
@@ -98,7 +98,7 @@
                         Total: <span id="cart-total" class="text-blue-600">₱0.00</span>
                     </li>
                     <li>
-                        <button id="checkout-button" class="btn btn-primary w-full mt-2" disabled>Checkout</button>
+                        <a id="checkout-button" class="btn btn-primary w-full mt-2" disabled href="{{route('checkout')}}">Checkout</a>
                     </li>
                 </div>
             </ul>
@@ -143,9 +143,11 @@
                             });
 
                             $('#checkout-button').prop('disabled', false);
+                            $("#checkout-button").removeAttr("disabled")
                         } else {
                             $('#empty-cart-message').show();
                             $('#checkout-button').prop('disabled', true);
+                            $("#checkout-button").attr("disabled", "disabled")
                         }
 
                         $('#cart-total').text('₱' + total.toFixed(2));
@@ -183,7 +185,7 @@
 
             // Checkout button click event
             $('#checkout-button').click(function() {
-                $('#checkout-form').submit();
+                // $('#checkout-form').submit();
             });
 
             $('body').on('click', '.add-to-cart', function() {
