@@ -39,4 +39,5 @@ Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.c
 Route::put('/cart/update/{itemId}', [CartController::class, 'update'])->name('cart.update');
 
 Route::get('/checkout', [OrderController::class, 'checkout_form'])->name('checkout');
-Route::post('/checkout/process', [OrderController::class, 'processCheckout'])->name('cart.processCheckout');
+Route::post('/order/process-checkout', [OrderController::class, 'store'])->name('order.processCheckout');
+Route::get('/order/success/{order}', [OrderController::class, 'success'])->name('order.success');

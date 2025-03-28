@@ -32,7 +32,8 @@
                                     <p class="text-gray-600">Quantity: {{ $item['quantity'] }}</p>
                                 </div>
                             </div>
-                            <p class="text-blue-600 font-bold">₱{{ number_format($item['price'] * $item['quantity'], 2) }}</p>
+                            <p class="text-blue-600 font-bold">₱{{ number_format($item['price'] * $item['quantity'], 2) }}
+                            </p>
                         </div>
                     @endforeach
                 </div>
@@ -46,7 +47,7 @@
             <!-- Shipping & Billing Information -->
             <div class="bg-base-100 rounded-2xl shadow-md p-6">
                 <h2 class="text-2xl font-bold text-primary mb-4">Shipping & Billing Information</h2>
-                <form action="{{ route('cart.processCheckout') }}" method="POST">
+                <form id="payment-form">
                     @csrf
                     <!-- Shipping Address -->
                     <div class="mb-4">
@@ -83,10 +84,16 @@
                             <input type="text" id="shipping_phone" name="shipping_phone"
                                 class="input input-bordered w-full" required>
                         </div>
+                        <div class="mt-2">
+                            <label for="shipping_email" class="block mb-1">Email Address</label>
+                            <input type="email" id="shipping_email" name="shipping_email"
+                                class="input input-bordered w-full">
+                        </div>
                     </div>
 
                     <!-- Billing Address (Checkbox to use shipping address) -->
                     <div class="mb-4">
+                        <h3 class="font-semibold mb-2">Billing Address</h3>
                         <div class="form-control">
                             <label class="label cursor-pointer">
                                 <input type="checkbox" id="same_as_shipping" name="same_as_shipping"
@@ -95,7 +102,7 @@
                             </label>
                         </div>
                         <div id="billing_address_fields">
-                            <h3 class="font-semibold mb-2">Billing Address</h3>
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="billing_first_name" class="block mb-1">First Name</label>
@@ -143,7 +150,8 @@
                         </div>
                         <div class="form-control">
                             <label class="label cursor-pointer">
-                                <input type="radio" name="payment_method" value="card" class="radio radio-primary" />
+                                <input type="radio" name="payment_method" value="card"
+                                    class="radio radio-primary" />
                                 <span class="label-text ml-2">Card Payment</span>
                             </label>
                         </div>
@@ -157,6 +165,7 @@
 @endsection
 
 @section('scripts')
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         $(document).ready(function() {
             // Toggle billing address fields based on checkbox
@@ -169,6 +178,58 @@
                     $('#billing_address_fields input').prop('required', true);
                 }
             }).change(); // Trigger on load
+
+            const stripe = Stripe("{{ config('services.stripe.key') }}"); // Your publishable key
+            const form = $('#payment-form');
+            const submitButton = $('#submit-button');
+
+            form.on('submit', function(event) {
+                event.preventDefault();
+
+                // Disable the submit button to prevent multiple clicks
+                submitButton.prop('disabled', true);
+
+                // Get the form data
+                let formData = new FormData(this);
+                formData.append('payment_method', 'ideal');
+
+                // Send the form data to the server to create the order and payment intent
+                $.ajax({
+                    url: "{{ route('order.processCheckout') }}",
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        // Redirect to the iDEAL payment page
+                        stripe.confirmIdealPayment(data.clientSecret, {
+                            payment_method: {
+                                ideal: {
+                                    bank: 'abn_amro', // Change this to the selected bank
+                                },
+                            },
+                            return_url: window.location.origin + "{{ route('order.success', '') }}" +
+                                data.orderId,
+                        }).then(function(result) {
+                            if (result.error) {
+                                console.error(result.error.message);
+                            } else {
+                                console.log('Payment successful!');
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        let errorResponse = xhr.responseJSON;
+                        console.error(errorResponse.message, errorResponse.error);
+                    },
+                    complete: function() {
+                        submitButton.prop('disabled', false);
+                    }
+                });
+            });
         });
     </script>
 @endsection

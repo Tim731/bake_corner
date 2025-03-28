@@ -4,7 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
+use App\Models\BillingAddress;
+use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Payment;
+use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
+use Stripe\Stripe;
+use Stripe\PaymentIntent;
 
 class OrderController extends Controller
 {
@@ -51,43 +59,161 @@ class OrderController extends Controller
         return view('order.checkout', ['cartItems' => $cartItems, 'total' => $total]); // Create a checkout.index view
     }
 
-    public function processCheckout(Request $request)
+    public function store(Request $request)
     {
-        // Validate the form data
+        // Validate the request data (you'll need to add validation rules)
         $validatedData = $request->validate([
-            'shipping_first_name' => 'required|string|max:255',
-            'shipping_last_name' => 'required|string|max:255',
-            'shipping_address' => 'required|string|max:255',
-            'shipping_city' => 'required|string|max:255',
-            'shipping_postal_code' => 'required|string|max:20',
-            'shipping_phone' => 'required|string|max:20',
-            'same_as_shipping' => 'nullable|boolean',
-            'billing_first_name' => 'required_without:same_as_shipping|string|max:255',
-            'billing_last_name' => 'required_without:same_as_shipping|string|max:255',
-            'billing_address' => 'required_without:same_as_shipping|string|max:255',
-            'billing_city' => 'required_without:same_as_shipping|string|max:255',
-            'billing_postal_code' => 'required_without:same_as_shipping|string|max:20',
-            'billing_phone' => 'required_without:same_as_shipping|string|max:20',
-            'payment_method' => 'required|in:cod,card',
+            'billing_first_name' => 'required_unless:same_as_shipping,on',
+            'billing_last_name' => 'required_unless:same_as_shipping,on',
+            'billing_address' => 'required_unless:same_as_shipping,on',
+            'billing_city' => 'required_unless:same_as_shipping,on',
+            'billing_postal_code' => 'required_unless:same_as_shipping,on',
+            'billing_phone' => 'required_unless:same_as_shipping,on',
+            'shipping_first_name' => 'required|string',
+            'shipping_last_name' => 'required|string',
+            'shipping_address' => 'required|string',
+            'shipping_city' => 'required|string',
+            'shipping_postal_code' => 'required|string',
+            'shipping_phone' => 'required|string',
+            'payment_method' => 'required|string',
+            'same_as_shipping' => 'nullable|string',
         ]);
 
-        // If "same as shipping" is checked, copy shipping data to billing data
-        if ($request->same_as_shipping) {
-            $validatedData['billing_first_name'] = $validatedData['shipping_first_name'];
-            $validatedData['billing_last_name'] = $validatedData['shipping_last_name'];
-            $validatedData['billing_address'] = $validatedData['shipping_address'];
-            $validatedData['billing_city'] = $validatedData['shipping_city'];
-            $validatedData['billing_postal_code'] = $validatedData['shipping_postal_code'];
-            $validatedData['billing_phone'] = $validatedData['shipping_phone'];
+        $cartItems = session('cart', []);
+
+        // check if cart is empty
+        if (empty($cartItems)) {
+            return response()->json(['message' => 'Your cart is empty.'], 400);
         }
 
-        // Process the order (e.g., save to database, send confirmation email)
-        // ...
+        try {
+            DB::beginTransaction();
 
-        // Clear the cart
-        session()->forget('cart');
+            // Create a customer (even if not logged in)
+            $customer = Customer::create([
+                'first_name' => $request->shipping_first_name,
+                'last_name' => $request->shipping_last_name,
+                'email' => $request->shipping_email ?? null, // Optional email
+                'phone' => $request->shipping_phone,
+                'address' => $request->shipping_address,
+            ]);
 
-        // Redirect to a thank you page or order confirmation page
-        return redirect()->route('home')->with('success', 'Your order has been placed successfully!');
+            // Create the order
+            $order = Order::create([
+                'customer_id' => $customer->customer_id,
+                'order_date' => now(),
+                'total_amount' => 0, // Calculate this later
+                'status' => 'pending',
+            ]);
+
+            // Create order details
+            $totalAmount = 0;
+
+            foreach ($cartItems as $item) {
+                $orderDetail = OrderDetail::create([
+                    'order_id' => $order->order_id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'subtotal' => 0, // Calculate this later
+                ]);
+                // Calculate subtotal and total amount
+                $product = Product::find($item['product_id']);
+                $subtotal = $product->price * $item['quantity'];
+                $orderDetail->update(['subtotal' => $subtotal]);
+                $totalAmount += $subtotal;
+            }
+            $order->update(['total_amount' => $totalAmount]);
+
+            // Create billing address
+            if ($request->same_as_shipping == 'on') {
+                BillingAddress::create([
+                    'order_id' => $order->order_id,
+                    'first_name' => $validatedData['shipping_first_name'],
+                    'last_name' => $validatedData['shipping_last_name'],
+                    'address' => $validatedData['shipping_address'],
+                    'city' => $validatedData['shipping_city'],
+                    'postal_code' => $validatedData['shipping_postal_code'],
+                    'phone' => $validatedData['shipping_phone'],
+                ]);
+            } else {
+                BillingAddress::create([
+                    'order_id' => $order->order_id,
+                    'first_name' => $validatedData['billing_first_name'],
+                    'last_name' => $validatedData['billing_last_name'],
+                    'address' => $validatedData['billing_address'],
+                    'city' => $validatedData['billing_city'],
+                    'postal_code' => $validatedData['billing_postal_code'],
+                    'phone' => $validatedData['billing_phone'],
+                ]);
+            }
+
+            // Create shipping address
+            ShippingAddress::create([
+                'order_id' => $order->order_id,
+                'first_name' => $validatedData['shipping_first_name'],
+                'last_name' => $validatedData['shipping_last_name'],
+                'address' => $validatedData['shipping_address'],
+                'city' => $validatedData['shipping_city'],
+                'postal_code' => $validatedData['shipping_postal_code'],
+                'phone' => $validatedData['shipping_phone'],
+            ]);
+
+            // Create payment
+            $payment = Payment::create([
+                'order_id' => $order->order_id,
+                'payment_method' => $validatedData['payment_method'],
+                'payment_status' => 'pending',
+                'amount' => $totalAmount,
+                'payment_date' => now(),
+            ]);
+
+            // Initialize Stripe
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            // Create a Payment Intent for iDEAL
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $totalAmount * 100, // Amount in cents
+                'currency' => 'eur', // Change to your currency if needed
+                'payment_method_types' => ['ideal'],
+                'metadata' => [
+                    'order_id' => $order->order_id,
+                ],
+            ]);
+
+            // Update payment with payment intent id
+            $payment->update(['payment_intent_id' => $paymentIntent->id]);
+
+            DB::commit();
+
+            // Return the client secret to the frontend
+            return response()->json([
+                'message' => 'Order placed successfully!',
+                'clientSecret' => $paymentIntent->client_secret,
+                'orderId' => $order->order_id,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Handle the error (log it, return an error response, etc.)
+            return response()->json(['message' => 'Error placing order.', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function success(Order $order)
+    {
+        // Retrieve the payment intent from Stripe
+        Stripe::setApiKey(config('services.stripe.secret'));
+        $payment = Payment::where('order_id', $order->order_id)->first();
+        try {
+            $paymentIntent = PaymentIntent::retrieve($payment->payment_intent_id);
+            if ($paymentIntent->status === 'succeeded') {
+                $payment->update(['payment_status' => 'succeeded']);
+                $order->update(['status' => 'processing']);
+                return view('order.success', compact('order'));
+            } else {
+                return view('order.failed', compact('order'));
+            }
+        } catch (\Exception $e) {
+            return view('order.failed', compact('order'));
+        }
     }
 }
